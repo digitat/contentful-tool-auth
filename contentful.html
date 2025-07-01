@@ -15,16 +15,19 @@
         <h1>Authentifizierung erfolgreich!</h1>
         <p>Sie können diesen Tab nun schließen und zum Kopier-Tool zurückkehren.</p>
     </div>
-    <script>
+       <script>
         // Dieser Code wird ausgeführt, sobald Contentful hierher weiterleitet
         if (window.location.hash.includes('access_token')) {
             const hash = window.location.hash.substring(1);
             const params = new URLSearchParams(hash);
             const accessToken = params.get('access_token');
 
-            if (accessToken) {
-                // Speichere den Token im localStorage. Dein lokales Tool wird darauf zugreifen.
-                localStorage.setItem('contentful-oauth-token', accessToken);
+            if (accessToken && window.opener) {
+                // Sende den Token als Nachricht an das Fenster, das dieses Popup geöffnet hat.
+                window.opener.postMessage({
+                    type: 'contentful-token',
+                    token: accessToken
+                }, '*'); // In einer echten Anwendung würdest du hier die genaue Herkunfts-URL angeben.
             }
         }
     </script>
